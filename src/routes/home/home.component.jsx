@@ -1,6 +1,7 @@
-import DirectoryMenu from '../../components/DirectoryMenu/DirectoryMenu.component.jsx'
+import DirectoryMenu from '../../components/Menu/DirectoryMenu/DirectoryMenu.component.jsx'
 
-const Home = () => {
+
+export default function Home(){
  
   const categories = [
     {
@@ -32,9 +33,7 @@ const Home = () => {
 
   return (
     <>
-    <DirectoryMenu categories={categories}/>
+      <DirectoryMenu categories={categories}/>
     </>
   )
 };
-
-export default Home;
