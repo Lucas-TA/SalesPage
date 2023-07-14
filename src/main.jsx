@@ -1,8 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider, Outlet,} from 'react-router-dom'
-import Home from './routes/Home/home.component.jsx';
 import NavigationBar from './routes/Navigation/navigation-bar.component.jsx';
+import Home from './routes/Home/home.component.jsx';
+import SignIn from './routes/SignIn/signin.component.jsx';
 import './index.scss'
 
 function Shop() {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: "shop",
         element: <Shop />,
+      },
+      {
+        path: "signin",
+        element: <SignIn />,
       }
     ],
   },

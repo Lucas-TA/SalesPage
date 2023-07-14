@@ -12,7 +12,10 @@ export default function NavigationBar() {
             </Link>
             <div className="nav-links-container">
             <Link className="nav-link" to='/shop'>
-                SHOP
+                Shop
+            </Link>
+            <Link className="nav-link" to='/SignIn'>
+                Sign In
             </Link>
             </div>
         </div>
