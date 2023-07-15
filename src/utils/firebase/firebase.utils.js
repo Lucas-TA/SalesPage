@@ -1,24 +1,10 @@
-import { 
-    initializeApp //Para inicializar o Firebase, chame initializeApp() passando as credenciais do projeto do Firebase
+//This block imports the necessary Firebase modules for initializing the Firebase app, authenticating users, and accessing the Firestore database.
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithRedirect, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 
-} from 'firebase/app';
-import { 
-    getAuth, //Para acessar o serviço de autenticação do Firebase, chame getAuth()
-    signInWithRedirect, //Para autenticar com um provedor de login, chame signInWithRedirect() ou signInWithPopup()
-    signInWithPopup, 
-    GoogleAuthProvider //Para autenticar com um provedor de login, chame signInWithRedirect() ou signInWithPopup()
-
-} from "firebase/auth";
-import {    
-    getFirestore, //Para acessar o banco de dados Firestore, chame getFirestore()
-    doc, //Para ler ou gravar um único documento, use os métodos doc()
-    getDoc, //Para ler um único documento, use os métodos getDoc() e getDocs()
-    setDoc //Para criar ou substituir um único documento, use os métodos set()
-
-} from 'firebase/firestore';
-
-
-// Firebase configuration
+//Here, the Firebase configuration object is defined, containing various credentials for your Firebase project. 
+//The initializeApp function is called with the configuration to initialize the Firebase app.
 const firebaseConfig = {
     apiKey: "AIzaSyAWsAbggnJtZb63edwkMEgR3WHjx2BrDdc",
     authDomain: "salespage-clothing-db.firebaseapp.com",
@@ -27,43 +13,49 @@ const firebaseConfig = {
     messagingSenderId: "529204244141",
     appId: "1:529204244141:web:bb3a445a65c5db51586024"
   };
-
-// Initialize Firebase passando as credenciais do projeto do Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 
-// Set Google authentication as a provider
-const provider = new GoogleAuthProvider();
-// Always trigger Google pop-up whenever GoogleAuthProvider is used for authentication and sign in
+//Setting up Google Authentication provider:
+//A GoogleAuthProvider object is created, which will be used for Google sign-in authentication.
+//The setCustomParameters method sets the authentication prompt to ask the user to select an account.
+const googleProvider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
 
-// Export firebase authentication and database
+//The getAuth function is used to initialize the authentication service using the Firebase app.
 export const auth = getAuth(firebaseApp);
+//The signInWithGooglePopup and signInWithGoogleRedirect functions are exported and can be used to initiate the Google sign-in process using a popup or redirect, respectively.
+export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider); 
+export const signInWithGoogleRedirect = () => signInWithRedirect(auth, googleProvider);
 
-// Sign in with Google
-//signInWithPopup() é um método assíncrono que retorna uma Promise que pode ser usada para obter o resultado da operação de login.
-export const signInWithGooglePopup = () => signInWithPopup(auth, provider); 
+//The getFirestore function is used to initialize the Firestore database using the Firebase app. The resulting Firestore instance is exported as db and can be used to interact with the Firestore database.
+export const db = getFirestore(firebaseApp);
 
-export const db = getFirestore(firebaseApp); // Initialize Firestore database
 
-// Create user document in database
+//Creating a user document in Firestore:
+
+//This function createUserDocumentFromAuth is exported and can be used to create a user document in Firestore based on the provided userAuth object, which represents the authenticated user.
 export const createUserDocumentFromAuth = async (userAuth) => {
-    const userDocRef = doc(db, 'users', userAuth.uid); // Create user document reference
-    const userDocSnapshot = await getDoc(userDocRef); // Get user document snapshot from database
+//First, it creates a reference to the user document using the Firestore's doc function, specifying the collection name as 'users' and the user's unique identifier (uid).
+    const userDocRef = doc(db, 'users', userAuth.uid);
+// Then, it retrieves the document snapshot using getDoc function to check if the user document already exists. 
+    const userDocSnapshot = await getDoc(userDocRef); 
 
-// If user doesn't exist in database, create a new user document
+//If the user document doesn't exist, it extracts the displayName and email from userAuth and generates a createdAt timestamp.
     if (!userDocSnapshot.exists()) {
         const { displayName, email } = userAuth;
-        const createdAt = new Date(); // Get current date and time
-
+        const createdAt = new Date();
+//It then uses the setDoc function to create the document in Firestore with the provided data.
         try {
             await setDoc(userDocRef, {
                 displayName,
                 email,
                 createdAt
-            }); // Create user document in database
+            });
+//If any errors occur during the creation of the user document, they are logged to the console
         } catch (error) {
             console.log('Error creating user', error.message);
         }
     }
-    return userDocRef; // Return user document reference
+//Finally, the function returns the reference to the user document.
+    return userDocRef;
 };
